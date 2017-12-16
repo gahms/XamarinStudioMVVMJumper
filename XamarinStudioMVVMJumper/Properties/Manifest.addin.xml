@@ -5,6 +5,9 @@
     <Extension path = "/MonoDevelop/Ide/Commands/Search">
         <Command id = "XamarinStudioMVVMJumper.XamarinStudioMVVMJumperCommands.GoToCounterpart"
                  _label = "Go To Counterpart"
+                 _description = "Go to file counterpart, Page-ViewModel"
+                 shortcut = "Control|Alt|Down"
+                 macShortcut = "Control|Meta|Down"
                  defaultHandler = "XamarinStudioMVVMJumper.GoToCounterpartHandler" />
     </Extension>
 

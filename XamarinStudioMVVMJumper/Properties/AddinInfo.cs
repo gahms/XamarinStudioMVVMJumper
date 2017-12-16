@@ -35,5 +35,6 @@ using Mono.Addins.Description;
 
 [assembly: AddinName("XamarinStudioMVVMJumper")]
 [assembly: AddinCategory("IDE extensions")]
-[assembly: AddinDescription("XamarinStudioMVVMJumper")]
+[assembly: AddinDescription("Jump between related files in MVVM projects")]
 [assembly: AddinAuthor("Nicolai Henriksen")]
+[assembly: AddinUrl("https://github.com/gahms/XamarinStudioMVVMJumper")]
