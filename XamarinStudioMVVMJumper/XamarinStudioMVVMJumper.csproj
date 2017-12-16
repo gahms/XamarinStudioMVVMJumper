@@ -5,4 +5,9 @@
   <ItemGroup>
     <PackageReference Include="MonoDevelop.Addins" Version="0.4.1" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Link>README.md</Link>
+    </None>
+  </ItemGroup>
 </Project>
