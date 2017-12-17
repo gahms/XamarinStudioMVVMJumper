@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using System.Linq;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace XamarinStudioMVVMJumper
 {
@@ -15,6 +18,8 @@ namespace XamarinStudioMVVMJumper
 
             var page = StripPostfix(filename, "Page");
             var viewModel = StripPostfix(filename, "ViewModel");
+            var serviceInterface = StripPrefixAndPostfix(filename, "I", "Service");
+            var serviceImpl = StripPostfix(filename, "Service");
 
             if (page != null)
             {
@@ -24,11 +29,29 @@ namespace XamarinStudioMVVMJumper
             {
                 newFilename = $"{viewModel}Page.xaml";
             }
+            else if (serviceInterface != null)
+            {
+                newFilename = $"{serviceInterface}Service.cs";
+            }
+            else if (serviceImpl != null)
+            {
+                newFilename = $"I{serviceImpl}Service.cs";
+            }
 
-            var doc = FindDocWithFilename(newFilename);
-            if (doc == null)
+            var docs = FindDocWithFilename(newFilename);
+            var count = docs.Count();
+            if (count == 0)
             {
                 IdeApp.Workbench.StatusBar.ShowMessage($"NOT found: {newFilename}");
+            }
+            else if (count == 1)
+            {
+                var file = docs.First();
+                var doc = IdeApp.Workbench.OpenDocument(file.FilePath, file.Project, true).Result;                
+            }
+            else
+            {
+                IdeApp.Workbench.StatusBar.ShowMessage($"More than 1 found: {newFilename}");
             }
         }
 
@@ -45,21 +68,27 @@ namespace XamarinStudioMVVMJumper
 
         }
 
-        private MonoDevelop.Ide.Gui.Document FindDocWithFilename(string filename)
+        private string StripPrefixAndPostfix(string filename, string prefix, string postfix)
         {
-            foreach (var proj in IdeApp.Workspace.GetAllProjects())
+            if (filename.StartsWith(prefix, StringComparison.Ordinal)
+                && filename.EndsWith(postfix, StringComparison.Ordinal))
             {
-                foreach (var file in proj.Files)
-                {                    
-                    if (file.FilePath.FileName == filename)
-                    {
-                        return IdeApp.Workbench.OpenDocument(file.FilePath, file.Project, true).Result;
-                    }
-                }
+                return filename.Substring(
+                    prefix.Length, filename.Length - postfix.Length - prefix.Length);
             }
-
-            return null;
+            else
+            {
+                return null;
+            }
         }
+
+        private IEnumerable<ProjectFile> FindDocWithFilename(string filename)
+        {
+            var files = IdeApp.Workspace.GetAllProjects().SelectMany(
+                p => p.Files.Where(f => f.FilePath.FileName == filename));
+
+            return files;
+       }
 
         protected override void Update (CommandInfo info)
         {
